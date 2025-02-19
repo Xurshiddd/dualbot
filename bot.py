@@ -1,6 +1,4 @@
 import logging
-from config import TOKEN, API_URL, API_URL2
-
 import requests
 from telegram import (
     Update, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
@@ -8,6 +6,12 @@ from telegram import (
 from telegram.ext import (
     Application, CommandHandler, MessageHandler, CallbackQueryHandler, filters, CallbackContext
 )
+
+# Bot tokeni
+TOKEN = "8164954118:AAGMubXTB8fJeHKbvD-Qg9Q39201EQdUi4I"
+API_URL = "https://request-test.xyz/api/getuser"
+API_URL2 = "https://request-test.xyz/api/savedata"
+
 # Logger sozlamalari
 logging.basicConfig(level=logging.INFO)
 
