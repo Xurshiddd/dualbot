@@ -128,9 +128,10 @@ async def help_command(update: Update, context: CallbackContext):
     help_text = "ℹ️ Yordam bo‘limi:\n\n"
     help_text += "📞 Telefon raqamni yuborish - Botga telefon raqamingizni jo‘nating\n"
     help_text += "📤 Rasm yuborish - Rasm jo‘nating\n"
-    help_text += "📍 Geolokatsiyani yuborish - Faqat Jonli Lokatsiyangizni yuboring\n"
-    help_text += "\n`@Muhammad_alayhissalom_ummati`\n"
-    help_text += "☎️ +998975413303"
+    help_text += "📍 Geolokatsiyani yuborish - Faqat Jonli Lokatsiyangizni yuboring va kuting javob qaytgach lokatsiyani o'chiring\n"
+    help_text += "\n muammo bo'lsa `@Muhammad_alayhissalom_ummati`\n"
+    help_text += "☎️ +998975413303\n"
+    help_text += "ga murojaat qiling"
     await update.message.reply_text(help_text)
 
 # 🚀 Botni ishga tushirish
