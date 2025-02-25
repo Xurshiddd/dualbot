@@ -1,3 +1,4 @@
+import logging
 import requests
 from telegram import (
     Update, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
@@ -13,33 +14,25 @@ API_URL2 = "https://request-test.xyz/api/savedata"
 
 # 📲 Telefon raqamini yuborish tugmasi
 phone_keyboard = ReplyKeyboardMarkup(
-    [[KeyboardButton("📞 Telefon raqamni yuborish", request_contact=True)], [KeyboardButton("ℹ️ Yordam")]],
+    [
+        [KeyboardButton("📞 Telefon raqamni yuborish", request_contact=True)],
+        [KeyboardButton("ℹ️ Yordam")]
+    ],
     resize_keyboard=True
 )
 
 # 📤 Asosiy menyu tugmalari
 main_keyboard = ReplyKeyboardMarkup(
-    [[KeyboardButton("📤 Rasm yuborish")], [KeyboardButton("ℹ️ Yordam")]],
+    [
+        [KeyboardButton("📤 Rasm yuborish")],
+        [KeyboardButton("ℹ️ Yordam")]
+    ],
     resize_keyboard=True
 )
 
 # 🚀 /start komandasi
 async def start_command(update: Update, context: CallbackContext):
     await update.message.reply_text("👋 Salom! Iltimos, telefon raqamingizni yuboring.", reply_markup=phone_keyboard)
-
-# ℹ️ /help komandasi
-async def help_command(update: Update, context: CallbackContext):
-    text = (
-        "📌 *Bot yordam*\n\n"
-        "🔹 /start - Botni ishga tushirish\n"
-        "🔹 /help - Yordam menyusi\n"
-        "🔹 📞 Telefon raqamni yuborish - Telefon raqamingizni tasdiqlash\n"
-        "🔹 📤 Rasm yuborish - Rasm yuklash\n"
-        "🔹 📍 Geolokatsiyani yuborish - Jonli Lokatsiyangizni yuboring\n\n"
-        "📞 Aloqa: '@Muhammad_alayhissalom_ummati'\n"
-        "📱 Telefon: +998975413303"
-    )
-    await update.message.reply_text(text, parse_mode="Markdown")
 
 # 📞 Telefon raqamini qabul qilish
 async def receive_contact(update: Update, context: CallbackContext):
@@ -66,10 +59,11 @@ async def receive_contact(update: Update, context: CallbackContext):
 async def ask_for_photo(update: Update, context: CallbackContext):
     await update.message.reply_text("📷 Iltimos, rasm yuboring.")
 
-# 🖼 Rasm qabul qilish
+# 🖼 Rasm qabul qilish va file_id saqlash
 async def receive_photo(update: Update, context: CallbackContext):
-    photo = update.message.photo[-1]  # Eng katta o'lchamli rasmni olish
+    photo = update.message.photo[-1]
     file_id = photo.file_id
+
     context.user_data["file_id"] = file_id
 
     keyboard = [[InlineKeyboardButton("📍 Geolokatsiyani yuborish", callback_data="send_location")]]
@@ -82,7 +76,8 @@ async def send_location_request(update: Update, context: CallbackContext):
     query = update.callback_query
     await query.answer()
     await query.message.reply_text("📍 Iltimos, geolokatsiyangizni yuboring.", reply_markup=ReplyKeyboardMarkup(
-        [[KeyboardButton("📍 Geolokatsiyani yuborish", request_location=True)], [KeyboardButton("ℹ️ Yordam")]], resize_keyboard=True
+        [[KeyboardButton("📍 Geolokatsiyani yuborish", request_location=True)],
+         [KeyboardButton("ℹ️ Yordam")]], resize_keyboard=True
     ))
 
 # 📍 Geolokatsiyani qabul qilish
@@ -128,6 +123,16 @@ async def receive_location(update: Update, context: CallbackContext):
     await message.reply_text(f"📩 Natija:\nStatus: {result.get('status')}\nXabar: {result.get('message')}")
     await message.reply_text("📤 Keyingi amaliyot kunigacha xayr!!!", reply_markup=main_keyboard)
 
+# ℹ️ /help komandasi
+async def help_command(update: Update, context: CallbackContext):
+    help_text = "ℹ️ Yordam bo‘limi:\n\n"
+    help_text += "📞 Telefon raqamni yuborish - Botga telefon raqamingizni jo‘nating\n"
+    help_text += "📤 Rasm yuborish - Rasm jo‘nating\n"
+    help_text += "📍 Geolokatsiyani yuborish - Faqat Jonli Lokatsiyangizni yuboring\n"
+    help_text += "\n`@Muhammad_alayhissalom_ummati`\n"
+    help_text += "☎️ +998975413303"
+    await update.message.reply_text(help_text)
+
 # 🚀 Botni ishga tushirish
 app = Application.builder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start_command))
@@ -137,5 +142,6 @@ app.add_handler(MessageHandler(filters.TEXT & filters.Regex("📤 Rasm yuborish"
 app.add_handler(MessageHandler(filters.PHOTO, receive_photo))
 app.add_handler(CallbackQueryHandler(send_location_request, pattern="send_location"))
 app.add_handler(MessageHandler(filters.LOCATION, receive_location))
+app.add_handler(MessageHandler(filters.TEXT & filters.Regex("ℹ️ Yordam"), help_command))
 
 app.run_polling()
