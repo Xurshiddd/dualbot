@@ -8,12 +8,13 @@ from telegram.ext import (
 )
 
 # 🔑 Telegram bot tokeni
-TOKEN = "8164954118:AAGMubXTB8fJeHKbvD-Qg9Q39201EQdUi4I"
+TOKEN = "8164954118:AAGmubXTB8fJeHKbvD-Qd9Q39201EQdUi4I"
 API_URL = "https://request-test.xyz/api/getuser"
 API_URL2 = "https://request-test.xyz/api/savedata"
 
 # 🔹 Logger sozlamalari
 logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 # 📲 Telefon raqamini yuborish tugmasi
 phone_keyboard = ReplyKeyboardMarkup(
@@ -31,12 +32,25 @@ main_keyboard = ReplyKeyboardMarkup(
 async def start_command(update: Update, context: CallbackContext):
     await update.message.reply_text("👋 Salom! Iltimos, telefon raqamingizni yuboring.", reply_markup=phone_keyboard)
 
+# ℹ️ /help komandasi
+async def help_command(update: Update, context: CallbackContext):
+    text = (
+        "📌 *Bot yordam*\n\n"
+        "🔹 /start - Botni ishga tushirish\n"
+        "🔹 /help - Yordam menyusi\n"
+        "🔹 📞 Telefon raqamni yuborish - Telefon raqamingizni tasdiqlash\n"
+        "🔹 📤 Rasm yuborish - Rasm yuklash\n"
+        "🔹 📍 Geolokatsiyani yuborish - Jonli Lokatsiyangizni yuboring\n"
+        "📞 Aloqa: @Muhammad_alayhissalom_ummati\n"
+        "📱 Telefon: +998975413303"
+    )
+    await update.message.reply_text(text, parse_mode="Markdown")
+
 # 📞 Telefon raqamini qabul qilish
 async def receive_contact(update: Update, context: CallbackContext):
     user = update.message.from_user
     contact = update.message.contact
 
-    # 🔴 Faqat foydalanuvchining o‘z raqamini qabul qilish
     if user.id != contact.user_id:
         await update.message.reply_text("❌ Siz faqat o‘z telefon raqamingizni yubora olasiz!")
         return
@@ -44,8 +58,13 @@ async def receive_contact(update: Update, context: CallbackContext):
     phone_number = contact.phone_number
     data = {"phone": phone_number, "telegram_id": user.id}
 
-    response = requests.post(API_URL, json=data)
-    result = response.json()
+    try:
+        response = requests.post(API_URL, json=data)
+        result = response.json()
+    except requests.exceptions.RequestException as e:
+        logger.error(f"API xatosi: {e}")
+        await update.message.reply_text("❌ Server bilan bog‘lanishda xatolik yuz berdi. Keyinroq qayta urinib ko‘ring.")
+        return
 
     if result.get('status') == 'success':
         context.user_data["phone_registered"] = True
@@ -123,10 +142,12 @@ async def receive_location(update: Update, context: CallbackContext):
 # 🚀 Botni ishga tushirish
 app = Application.builder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start_command))
+app.add_handler(CommandHandler("help", help_command))  # ✅ Yangi qo‘shilgan help komandasi
 app.add_handler(MessageHandler(filters.CONTACT, receive_contact))
 app.add_handler(MessageHandler(filters.TEXT & filters.Regex("📤 Rasm yuborish"), ask_for_photo))
 app.add_handler(MessageHandler(filters.PHOTO, receive_photo))
 app.add_handler(CallbackQueryHandler(send_location_request, pattern="send_location"))
 app.add_handler(MessageHandler(filters.LOCATION, receive_location))
 
+logger.info("🤖 Bot ishga tushdi...")
 app.run_polling()
