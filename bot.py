@@ -13,13 +13,13 @@ API_URL2 = "https://request-test.xyz/api/savedata"
 
 # 📲 Telefon raqamini yuborish tugmasi
 phone_keyboard = ReplyKeyboardMarkup(
-    [[KeyboardButton("📞 Telefon raqamni yuborish", request_contact=True)]],
+    [[KeyboardButton("📞 Telefon raqamni yuborish", request_contact=True)], [KeyboardButton("ℹ️ Yordam")]],
     resize_keyboard=True
 )
 
 # 📤 Asosiy menyu tugmalari
 main_keyboard = ReplyKeyboardMarkup(
-    [[KeyboardButton("📤 Rasm yuborish")]],
+    [[KeyboardButton("📤 Rasm yuborish")], [KeyboardButton("ℹ️ Yordam")]],
     resize_keyboard=True
 )
 
@@ -36,7 +36,7 @@ async def help_command(update: Update, context: CallbackContext):
         "🔹 📞 Telefon raqamni yuborish - Telefon raqamingizni tasdiqlash\n"
         "🔹 📤 Rasm yuborish - Rasm yuklash\n"
         "🔹 📍 Geolokatsiyani yuborish - Lokatsiyangizni yuboring\n\n"
-        "📞 Aloqa: '@Muhammad_alayhissalom_ummati'\n"
+        "📞 Aloqa: @Muhammad_alayhissalom_ummati\n"
         "📱 Telefon: +998975413303"
     )
     await update.message.reply_text(text, parse_mode="Markdown")
@@ -82,7 +82,7 @@ async def send_location_request(update: Update, context: CallbackContext):
     query = update.callback_query
     await query.answer()
     await query.message.reply_text("📍 Iltimos, geolokatsiyangizni yuboring.", reply_markup=ReplyKeyboardMarkup(
-        [[KeyboardButton("📍 Geolokatsiyani yuborish", request_location=True)]], resize_keyboard=True
+        [[KeyboardButton("📍 Geolokatsiyani yuborish", request_location=True)], [KeyboardButton("ℹ️ Yordam")]], resize_keyboard=True
     ))
 
 # 📍 Geolokatsiyani qabul qilish
