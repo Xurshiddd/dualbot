@@ -35,8 +35,8 @@ async def help_command(update: Update, context: CallbackContext):
         "🔹 /help - Yordam menyusi\n"
         "🔹 📞 Telefon raqamni yuborish - Telefon raqamingizni tasdiqlash\n"
         "🔹 📤 Rasm yuborish - Rasm yuklash\n"
-        "🔹 📍 Geolokatsiyani yuborish - Lokatsiyangizni yuboring\n\n"
-        "📞 Aloqa: @Muhammad_alayhissalom_ummati\n"
+        "🔹 📍 Geolokatsiyani yuborish - Jonli Lokatsiyangizni yuboring\n\n"
+        "📞 Aloqa: '@Muhammad_alayhissalom_ummati'\n"
         "📱 Telefon: +998975413303"
     )
     await update.message.reply_text(text, parse_mode="Markdown")
