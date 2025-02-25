@@ -7,7 +7,7 @@ from telegram.ext import (
 )
 
 # 🔑 Telegram bot tokeni
-TOKEN = "8164954118:AAGD-Qg9Q39201EQdUi4I"
+TOKEN = "8164954118:AAGMubXTB8fJeHKbvD-Qg9Q39201EQdUi4I"
 API_URL = "https://request-test.xyz/api/getuser"
 API_URL2 = "https://request-test.xyz/api/savedata"
 
