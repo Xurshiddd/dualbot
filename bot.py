@@ -1,4 +1,3 @@
-import logging
 import requests
 from telegram import (
     Update, ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
@@ -8,13 +7,9 @@ from telegram.ext import (
 )
 
 # 🔑 Telegram bot tokeni
-TOKEN = "8164954118:AAGmubXTB8fJeHKbvD-Qd9Q39201EQdUi4I"
+TOKEN = "8164954118:AAGD-Qg9Q39201EQdUi4I"
 API_URL = "https://request-test.xyz/api/getuser"
 API_URL2 = "https://request-test.xyz/api/savedata"
-
-# 🔹 Logger sozlamalari
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
 
 # 📲 Telefon raqamini yuborish tugmasi
 phone_keyboard = ReplyKeyboardMarkup(
@@ -40,7 +35,7 @@ async def help_command(update: Update, context: CallbackContext):
         "🔹 /help - Yordam menyusi\n"
         "🔹 📞 Telefon raqamni yuborish - Telefon raqamingizni tasdiqlash\n"
         "🔹 📤 Rasm yuborish - Rasm yuklash\n"
-        "🔹 📍 Geolokatsiyani yuborish - Jonli Lokatsiyangizni yuboring\n"
+        "🔹 📍 Geolokatsiyani yuborish - Lokatsiyangizni yuboring\n\n"
         "📞 Aloqa: @Muhammad_alayhissalom_ummati\n"
         "📱 Telefon: +998975413303"
     )
@@ -58,13 +53,8 @@ async def receive_contact(update: Update, context: CallbackContext):
     phone_number = contact.phone_number
     data = {"phone": phone_number, "telegram_id": user.id}
 
-    try:
-        response = requests.post(API_URL, json=data)
-        result = response.json()
-    except requests.exceptions.RequestException as e:
-        logger.error(f"API xatosi: {e}")
-        await update.message.reply_text("❌ Server bilan bog‘lanishda xatolik yuz berdi. Keyinroq qayta urinib ko‘ring.")
-        return
+    response = requests.post(API_URL, json=data)
+    result = response.json()
 
     if result.get('status') == 'success':
         context.user_data["phone_registered"] = True
@@ -76,12 +66,11 @@ async def receive_contact(update: Update, context: CallbackContext):
 async def ask_for_photo(update: Update, context: CallbackContext):
     await update.message.reply_text("📷 Iltimos, rasm yuboring.")
 
-# 🖼 Rasm qabul qilish va file_id saqlash
+# 🖼 Rasm qabul qilish
 async def receive_photo(update: Update, context: CallbackContext):
     photo = update.message.photo[-1]  # Eng katta o'lchamli rasmni olish
-    file_id = photo.file_id  # Telegram file_id
-
-    context.user_data["file_id"] = file_id  # Saqlash
+    file_id = photo.file_id
+    context.user_data["file_id"] = file_id
 
     keyboard = [[InlineKeyboardButton("📍 Geolokatsiyani yuborish", callback_data="send_location")]]
     reply_markup = InlineKeyboardMarkup(keyboard)
@@ -142,12 +131,11 @@ async def receive_location(update: Update, context: CallbackContext):
 # 🚀 Botni ishga tushirish
 app = Application.builder().token(TOKEN).build()
 app.add_handler(CommandHandler("start", start_command))
-app.add_handler(CommandHandler("help", help_command))  # ✅ Yangi qo‘shilgan help komandasi
+app.add_handler(CommandHandler("help", help_command))
 app.add_handler(MessageHandler(filters.CONTACT, receive_contact))
 app.add_handler(MessageHandler(filters.TEXT & filters.Regex("📤 Rasm yuborish"), ask_for_photo))
 app.add_handler(MessageHandler(filters.PHOTO, receive_photo))
 app.add_handler(CallbackQueryHandler(send_location_request, pattern="send_location"))
 app.add_handler(MessageHandler(filters.LOCATION, receive_location))
 
-logger.info("🤖 Bot ishga tushdi...")
 app.run_polling()
